@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+::-webkit-scrollbar {
+  width: 0px;  /* Width of the scrollbar */
+}
+
+/* Optional: for smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
