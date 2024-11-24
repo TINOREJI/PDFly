@@ -17,7 +17,7 @@ PDFly is a web application for converting DOC files into secure PDFs, leveraging
 Ensure the following are installed:
 - **Git**
 - **Node.js** (v16+)
-- **Docker** (optional for containerized deployment)
+- **Libreoffice** 
 
 ### Running Locally
 
