@@ -1,4 +1,4 @@
-# PDFly - Convert DOC to Secure PDF
+# PDFly - Convert DOC to PDF
 
 PDFly is a web application for converting DOC files into secure PDFs, leveraging modern web technologies. Easily upload DOC files, convert them into PDFs, and apply password protection.
 
@@ -46,7 +46,7 @@ Ensure the following are installed:
    ```
 4. Access the app: Open your browser and go to http://localhost:3000.
 
-##Using
+## Using
 1. Upload a Document:
    Go to http://localhost:3000.
    Use the Choose File button to upload your .doc or .docx file.
