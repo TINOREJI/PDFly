@@ -50,9 +50,10 @@ Ensure the following are installed:
 1. Upload a Document:
  - Go to http://localhost:3000.
  - Use the Choose File button to upload your .doc or .docx file.
-   ![image](https://github.com/user-attachments/assets/0ae8f157-96ed-4636-b381-eadc62b5a406)
+ - ![image](https://github.com/user-attachments/assets/3a133899-3ad2-4ca7-9696-7cef61bdc464)
+   
  - If the File is of other Format
-    ![image](https://github.com/user-attachments/assets/3a133899-3ad2-4ca7-9696-7cef61bdc464)
+    ![image](https://github.com/user-attachments/assets/0ae8f157-96ed-4636-b381-eadc62b5a406)
   
 
 3. Convert to PDF:
