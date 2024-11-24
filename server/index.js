@@ -1,11 +1,10 @@
 import express from "express";
 import multer from "multer";
-import qpdf from "node-qpdf"; 
-import pdfly from "docx-pdf";
-import path from "path";
-import fs from "fs";
 import cors from "cors";
+import fs from "fs";
+import path from "path";
 import { fileURLToPath } from "url";
+import { convert } from "libreoffice";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -30,9 +29,8 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Endpoint for DOCX to PDF conversion
-app.post("/docxtopdf", upload.single("docFile"), (req, res) => {
+app.post("/docxtopdf", upload.single("docFile"), async (req, res) => {
   const file = req.file;
-  const password = req.body.password;
 
   if (!file) {
     return res.status(400).json({ message: "Please upload a file." });
@@ -42,48 +40,29 @@ app.post("/docxtopdf", upload.single("docFile"), (req, res) => {
   const outputPdfName = `${path.parse(file.originalname).name}.pdf`;
   const outputPath = path.join(outputDir, outputPdfName);
 
-  // Convert DOCX to PDF
-  pdfly(inputPath, outputPath, async (err) => {
-    if (err) {
-      console.error("Error during conversion:", err);
-      return res.status(500).json({ message: "Error converting DOCX to PDF." });
-    }
+  try {
+    // Read file and convert to PDF
+    const docBuffer = await fs.promises.readFile(inputPath);
+    const pdfBuffer = await new Promise((resolve, reject) => {
+      convert(docBuffer, "pdf", undefined, (err, result) => {
+        if (err) return reject(err);
+        resolve(result);
+      });
+    });
 
-    try {
-      // Apply password protection if password is provided
-      if (password && password.length >= 4) {
-        const encryptedPath = path.join(outputDir, `protected_${outputPdfName}`);
-        const options = {
-          keyLength: 128,
-          password: password,
-          restrictions: {
-            print: 'low',   // Restricts printing to low quality
-            useAes: 'y'     // Use AES encryption
-          }
-        };
+    // Write converted PDF to output directory
+    await fs.promises.writeFile(outputPath, pdfBuffer);
 
-        // Encrypt the PDF using qpdf
-        await qpdf.encrypt(outputPath, options, encryptedPath);
-
-        // Send encrypted PDF as download
-        return res.download(encryptedPath, () => {
-          // Cleanup temporary files
-          fs.unlinkSync(inputPath);
-          fs.unlinkSync(outputPath);
-          fs.unlinkSync(encryptedPath);
-        });
-      } else {
-        // Send unprotected PDF
-        return res.download(outputPath, () => {
-          fs.unlinkSync(inputPath);
-          fs.unlinkSync(outputPath);
-        });
-      }
-    } catch (encryptionError) {
-      console.error("Error during encryption:", encryptionError);
-      return res.status(500).json({ message: "Error applying password protection." });
-    }
-  });
+    // Send the PDF as a downloadable response
+    res.download(outputPath, () => {
+      // Cleanup temporary files
+      fs.unlinkSync(inputPath);
+      fs.unlinkSync(outputPath);
+    });
+  } catch (err) {
+    console.error("Error during conversion:", err);
+    res.status(500).json({ message: "Error converting DOCX to PDF." });
+  }
 });
 
 // Start server

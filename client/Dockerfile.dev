@@ -1,0 +1,23 @@
+# Client Dockerfile
+FROM node:16
+
+WORKDIR /app
+
+# Install dependencies
+COPY ./package.json /app
+COPY ./package-lock.json /app
+COPY ./* /app
+
+RUN npm install
+
+# Copy source code
+COPY . ./app
+
+# Build the app
+RUN npm run build
+
+# Expose the port
+EXPOSE 3000
+
+# Run the app
+CMD ["npm", "run", "dev"]
